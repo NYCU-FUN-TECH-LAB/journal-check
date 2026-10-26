@@ -43,6 +43,10 @@
   .verdict { padding: 10px 12px; border-radius: 8px; margin: 10px 0; font-weight: 600; }
   .verdict.fail { background: var(--fail-bg); color: var(--fail); }
   .verdict.check { background: var(--check-bg); color: var(--check); }
+  .verdict.unknown { background: var(--line); color: var(--ink); }
+  .tag.unknown { background: var(--line); color: var(--muted); }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+  button.opt { text-align: left; }
   .verdict.clear { background: var(--ok-bg); color: var(--ok); }
   .rule td:first-child { width: 22%; font-weight: 600; }
   .note { font-size: 14px; color: var(--muted); }
@@ -63,8 +67,8 @@
   <section class="card no-print" aria-label="輸入">
     <label for="q"><strong>要查的期刊</strong>（一行一本；可混用名稱、ISSN、網址）</label>
     <textarea id="q" placeholder="例如：&#10;ACS Omega&#10;Technological Forecasting and Social Change&#10;2071-1050"></textarea>
-    <details class="no-print" style="margin-top:8px"><summary>進階：OpenAlex 金鑰（查很多本時用）</summary>
-      <p class="note">OpenAlex 免費額度是同一個網路位址共用，每天約 100 次查詢，學校網路常常很快用完；用完時工具會自動改用 Crossref，但資料較少（沒有網址與論文數）。到 openalex.org/settings/api 可以免費申請自己的金鑰，貼在這裡，只存在這台電腦的瀏覽器。</p>
+    <details class="no-print" style="margin-top:8px"><summary>進階設定（選填）</summary>
+      <p class="note">貼上 OpenAlex 金鑰可以讓查詢更穩定。到 openalex.org/settings/api 免費申請，只存在這台電腦的瀏覽器。</p>
       <input id="key" type="text" autocomplete="off" placeholder="OpenAlex API key（選填）" style="width:100%;padding:8px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)">
     </details>
     <div class="row">
@@ -86,6 +90,7 @@
       <li>Beall's List 網站自稱是 Beall 名單的封存版；原始名單約止於 2017 年，其後由網站另外補充。列入與否是該名單的判斷，不代表期刊現況。</li>
       <li>「輔助參考」的兩份名單不列入三不原則的判定：中科院國際期刊預警名單是依官方名單以外的轉載頁面轉錄的（官方網站當時連不上），使用前請到官方網站核對；DOAJ 的除名紀錄只涵蓋 2024 年 2 月之後，而且是事件紀錄，不一定反映期刊現況。DOAJ 是收錄名單，「已收錄」只是正面參考，「查不到」本身不是問題。</li>
       <li>「MDPI」這一項是依出版者、網址、ISSN 與 Wikipedia 的 MDPI 期刊名單判斷；Wikipedia 的 MDPI 條目記載了相關爭議，詳見報告中列出的條目標題。</li>
+      <li>輸入的名稱如果找不到、或和資料庫裡的期刊名稱不夠像，工具不會下任何結論，而是請您確認要查哪一本（避免拼錯名稱被誤當成「沒有問題」）。</li>
       <li>名稱比對有「相同」與「相似」兩種；標示「需確認」的結果要點進連結核對。期刊名稱、出版者資料來自 OpenAlex。</li>
     </ul>
   </section>
@@ -149,11 +154,11 @@
       issns: [...new Set(issns)], publisher: s.host_organization_name || "", homepage: s.homepage_url || "",
       works: s.works_count, byYear: s.counts_by_year || [], doaj: s.is_in_doaj, type: s.type, id: s.id };
   }
-  /* Crossref is the fallback when OpenAlex's free daily budget (shared by everyone on one network address) is used up */
+  /* Crossref is the fallback when OpenAlex cannot answer */
   const CR = "https://api.crossref.org/journals";
   const crCand = (m) => ({ name: m.title, altNames: [], issns: m.ISSN || [], publisher: m.publisher || "", homepage: "", byYear: [] });
-  async function crossref(q, isIssn) {
-    const r = await fetch(isIssn ? CR + "/" + encodeURIComponent(q) : CR + "?" + new URLSearchParams({ query: q, rows: 6 }));
+  async function crossref(q, isIssn, rows) {
+    const r = await fetch(isIssn ? CR + "/" + encodeURIComponent(q) : CR + "?" + new URLSearchParams({ query: q, rows: rows || 6 }));
     if (r.status === 404) return [];
     if (!r.ok) throw new Error("Crossref " + r.status);
     const m = (await r.json()).message;
@@ -169,7 +174,7 @@
     try { cands = (await oa(isIssn ? { filter: "issn:" + id } : { search: q, "per-page": 6 })).map(toCand); }
     catch (e) {
       if (e.status !== 429 && e.status !== 403 && !(e instanceof TypeError)) throw e;
-      cands = await crossref(isIssn ? id : q, isIssn); src = "Crossref（OpenAlex 的免費額度用完了）";
+      cands = await crossref(isIssn ? id : q, isIssn); src = "Crossref";
     }
     const nq = JCMatch.norm(q);
     cands.sort((a, b) => (JCMatch.norm(b.name) === nq) - (JCMatch.norm(a.name) === nq));
@@ -192,16 +197,49 @@
     return issns.length ? { state: "out", url: "https://doaj.org/search/journals?source=" + encodeURIComponent(JSON.stringify({ query: { query_string: { query: issns[0] } } })) } : null;
   }
 
+  const SIM_OK = 0.9;
+  function listSuggestions(q) { return JCMatch.suggest(q, DATA, 3, 0.6); }
+
+  async function finish(q, cands, pick, extra) {
+    const doaj = await doajLookup(cands[pick].issns || []);
+    return Object.assign({ q, cands, pick, doaj, doajCache: { [pick]: doaj } }, extra || {});
+  }
+
+  /* One input line becomes either a checked journal, or an "unresolved" card that asks the user what they meant.
+     A journal is never judged from a name the databases could not confirm: "not found" must not read as "safe". */
   async function checkLine(q) {
-    let cands = [], how = "", warn = "", src = "";
-    try { ({ cands, how, src } = await lookup(q)); }
-    catch (e) { warn = "OpenAlex 暫時查不到（" + e.message + "），只用您輸入的文字比對，結果可能不完整。"; }
-    if (!cands.length) {
-      cands = [{ name: q, altNames: [], issns: [], publisher: "", homepage: "" }];
-      warn = warn || "OpenAlex 找不到這個名稱，只用您輸入的文字比對（沒有出版者與 ISSN 資料），結果可能不完整。";
+    let cands = [], failed = false;
+    try { ({ cands } = await lookup(q)); } catch (e) { failed = true; }
+    const direct = ISSN_RE.test(q.trim()) || (URL_RE.test(q.trim()) && /\./.test(q));
+    if (cands.length && direct) return finish(q, cands, 0);
+    let sims = cands.map((c) => JCMatch.similarity(q, c.name));
+    if (!direct && Math.max(0, ...sims) < SIM_OK) {
+      // a misspelled word finds nothing in a word search: search the longer words alone and rank what comes back by how close the title is
+      const words = q.split(/\s+/).filter((w) => w.replace(/\W/g, "").length >= 5).sort((a, b) => b.length - a.length).slice(0, 2);
+      for (const w of words) {
+        try {
+          for (const c of await crossref(w, false, 30)) if (!cands.some((x) => JCMatch.norm(x.name) === JCMatch.norm(c.name))) cands.push(c);
+        } catch (e) { /* the list suggestions below still work */ }
+      }
+      sims = cands.map((c) => JCMatch.similarity(q, c.name));
     }
-    const doaj = await doajLookup(cands[0].issns || []);
-    return { q, how, src, warn, cands, pick: 0, doaj, doajCache: { 0: doaj } };
+    const best = sims.length ? sims.indexOf(Math.max(...sims)) : -1;
+    if (best >= 0 && sims[best] >= SIM_OK) {
+      const fixed = JCMatch.norm(q) !== JCMatch.norm(cands[best].name);
+      return finish(q, cands, best, { fixed });
+    }
+    const options = cands.map((c, i) => ({ c, s: sims[i] })).filter((x) => x.s >= 0.5).sort((a, b) => b.s - a.s).slice(0, 5).map((x) => x.c);
+    return { q, unresolved: true, failed, options, suggestions: listSuggestions(q) };
+  }
+
+  async function pickOption(i, cand) {
+    RESULTS[i] = await finish(RESULTS[i].q, [cand], 0, { fixed: true });
+    renderAll();
+  }
+  async function pickName(i, name) {
+    const r = await checkLine(name);
+    RESULTS[i] = r.unresolved ? await finish(RESULTS[i].q, [{ name, altNames: [], issns: [], publisher: "", homepage: "" }], 0, { fixed: true }) : Object.assign(r, { q: RESULTS[i].q, fixed: true });
+    renderAll();
   }
 
   /* ---------- rendering ---------- */
@@ -260,21 +298,33 @@
     return rows;
   }
 
+  function renderUnresolved(item, idx) {
+    const opts = item.options.map((c) => h("button", { class: "opt", type: "button" }, c.name + (c.issns[0] ? "（" + c.issns[0] + (c.publisher ? "，" + c.publisher : "") + "）" : ""))) ;
+    opts.forEach((b, k) => b.addEventListener("click", () => pickOption(idx, item.options[k])));
+    const sug = item.suggestions.map((x) => h("button", { class: "opt", type: "button" }, x.name + "（" + x.label + "）"));
+    sug.forEach((b, k) => b.addEventListener("click", () => pickName(idx, item.suggestions[k].name)));
+    return h("div", { class: "journal card" },
+      h("h3", {}, "「" + item.q + "」"),
+      h("div", { class: "verdict unknown" }, item.failed && !opts.length ? "目前連不上期刊資料庫，沒有做任何判斷，請稍後再試" : "找不到這本期刊，沒有做任何判斷。請檢查拼字，或點下面的選項。"),
+      opts.length ? h("div", {}, h("div", { class: "note" }, "您是不是要查："), h("div", { class: "opts" }, opts)) : null,
+      sug.length ? h("div", {}, h("div", { class: "note" }, "名單上拼法相近的期刊："), h("div", { class: "opts" }, sug)) : null);
+  }
+
   function renderJournal(item, idx) {
+    if (item.unresolved) return renderUnresolved(item, idx);
     const cand = item.cands[item.pick];
     item.res = JCMatch.check(cand, DATA);
     const yrs = (cand.byYear || []).slice().sort((a, b) => b.year - a.year);
     const lastFull = yrs.find((y) => y.year < new Date().getFullYear());
-    const sel = item.cands.length > 1 ? h("label", { class: "note no-print" }, "OpenAlex 找到多個，這是您要的嗎？ ",
+    const sel = item.cands.length > 1 ? h("label", { class: "note no-print" }, "找到多個相近的期刊，這是您要的嗎？ ",
       (() => { const s = h("select", { "aria-label": "選擇期刊" }, item.cands.map((c, i) => h("option", { value: i }, c.name + "（" + (c.issns[0] || "無 ISSN") + "，" + (c.publisher || "出版者不明") + "）")));
         s.value = item.pick; s.addEventListener("change", async () => { item.pick = +s.value; if (!(item.pick in item.doajCache)) item.doajCache[item.pick] = await doajLookup(item.cands[item.pick].issns || []); item.doaj = item.doajCache[item.pick]; renderAll(); }); return s; })()) : null;
     return h("div", { class: "journal card" },
       h("h3", {}, "「" + item.q + "」→ " + cand.name),
       h("div", { class: "meta" }, [cand.issns.length ? "ISSN " + cand.issns.join("、") : null, cand.publisher ? "出版者 " + cand.publisher : null,
         cand.homepage ? "網站 " + JCMatch.hostOf(cand.homepage) : null,
-        lastFull ? lastFull.year + " 年論文數 " + lastFull.works_count.toLocaleString() + "（OpenAlex，僅供參考）" : null].filter(Boolean).join("　｜　")),
-      item.warn ? h("div", { class: "note", style: "color:var(--check)" }, item.warn) : null,
-      item.src ? h("div", { class: "note" }, "期刊資料來源：" + item.src) : null, sel,
+        lastFull ? lastFull.year + " 年論文數 " + lastFull.works_count.toLocaleString() + "（僅供參考）" : null].filter(Boolean).join("　｜　")),
+      item.fixed ? h("div", { class: "note" }, "已把「" + item.q + "」對應到 " + item.cands[item.pick].name) : null, sel,
       h("div", { class: "verdict " + item.res.overall }, overallText(item.res.overall)),
       h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "三不原則"), h("th", {}, "比對的名單"), h("th", {}, "結果"), h("th", {}, "查到的條目"))),
         h("tbody", {}, evidenceRows(item, cand))));
@@ -287,6 +337,7 @@
     const head = h("tr", {}, h("th", {}, "輸入"), h("th", {}, "對應到的期刊"),
       ...RULES.map((r) => h("th", {}, r.n + ". " + r.label)), h("th", {}, "結論"), h("th", {}, "輔助警示"));
     const body = RESULTS.map((it) => {
+      if (it.unresolved) return h("tr", {}, h("td", {}, it.q), h("td", { colspan: RULES.length + 3 }, h("span", { class: "tag unknown" }, "無法判斷"), " 找不到這本期刊，請檢查拼字（見下方）"));
       const c = it.cands[it.pick]; it.res = JCMatch.check(c, DATA);
       return h("tr", {}, h("td", {}, it.q), h("td", {}, c.name, h("div", { class: "note" }, c.publisher || "")),
         ...RULES.map((r) => h("td", {}, tag(it.res.rules[r.key]))), h("td", {}, tag(it.res.overall)),
@@ -320,6 +371,7 @@
     const q = (s) => '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"';
     const lines = [["輸入", "對應期刊", "ISSN", "出版者", "1.巨錄", "2.掠奪", "3.MDPI", "結論", "輔助警示（中科院、DOAJ除名）", "DOAJ收錄", "查到的條目"].map(q).join(",")];
     RESULTS.forEach((it) => {
+      if (it.unresolved) { lines.push([it.q, "", "", "", "", "", "", "無法判斷（找不到這本期刊）", "", "", ""].map(q).join(",")); return; }
       const c = it.cands[it.pick], r = it.res;
       const hits = Object.entries(r.sources).flatMap(([k, a]) => a.map((x) => SRC_NAME[k] + "：" + x.entry + "（" + (x.level === "exact" ? "相同" : "相似") + "）"));
       lines.push([it.q, c.name, c.issns.join("; "), c.publisher, WORD[r.rules.mega], WORD[r.rules.predatory], WORD[r.rules.mdpi], overallText(r.overall), WORD[r.extra], it.doaj ? (it.doaj.state === "in" ? "已收錄" : "查不到") : "未查詢", hits.join(" | ")].map(q).join(","));

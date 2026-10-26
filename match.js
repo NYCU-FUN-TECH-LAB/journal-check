@@ -174,5 +174,52 @@
     return res;
   }
 
-  return { norm, check, hostOf, nameMatch, variants };
+  /* Dice coefficient on character bigrams of the normalized names: tolerant of typos and swapped letters. */
+  function bigrams(s) {
+    const t = " " + s + " ", out = new Map();
+    for (let i = 0; i < t.length - 1; i++) { const g = t.slice(i, i + 2); out.set(g, (out.get(g) || 0) + 1); }
+    return out;
+  }
+  function similarity(a, b) {
+    a = norm(a); b = norm(b);
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    const A = bigrams(a), B = bigrams(b);
+    let inter = 0, na = 0, nb = 0;
+    A.forEach((v, k) => { na += v; if (B.has(k)) inter += Math.min(v, B.get(k)); });
+    B.forEach((v) => { nb += v; });
+    return (2 * inter) / (na + nb);
+  }
+
+  /* Names on the lists that look like what was typed ("IEEE Acecce" -> "IEEE Access"). */
+  let POOL = null;
+  function pool(data) {
+    if (POOL && POOL.data === data) return POOL.items;
+    const S = data.sources, items = [], seen = new Set();
+    const add = (name, label) => { const k = norm(name); if (k.length >= 4 && !seen.has(k + label)) { seen.add(k + label); items.push({ name, label, key: k, grams: bigrams(k) }); } };
+    S.wiki_mega.items.forEach((x) => add(x.name, "Wikipedia 巨錄名單"));
+    S.wiki_mdpi_journals.items.forEach((x) => add(x.name, "MDPI 期刊"));
+    S.beall_standalone.items.forEach((x) => add(x.name, "Beall's List 獨立期刊"));
+    S.beall_publishers.items.forEach((x) => add(x.name, "Beall's List 出版者"));
+    ((S.cas_ewl && S.cas_ewl.items) || []).forEach((x) => add(x.name.replace(/-(basel|us)$/i, ""), "中科院預警名單"));
+    ((S.doaj_withdrawn && S.doaj_withdrawn.items) || []).forEach((x) => add(x.name, "DOAJ 除名紀錄"));
+    POOL = { data, items };
+    return items;
+  }
+  function suggest(query, data, n, min) {
+    const q = norm(query), G = bigrams(q), nq = [...G.values()].reduce((a, b) => a + b, 0);
+    const scored = [];
+    pool(data).forEach((it) => {
+      let inter = 0, ni = 0;
+      it.grams.forEach((v, k) => { ni += v; if (G.has(k)) inter += Math.min(v, G.get(k)); });
+      const d = (2 * inter) / (nq + ni);
+      if (d >= (min || 0.6)) scored.push({ name: it.name, label: it.label, score: d });
+    });
+    scored.sort((a, b) => b.score - a.score);
+    const out = [], seen = new Set();
+    for (const x of scored) { const k = norm(x.name); if (seen.has(k)) continue; seen.add(k); out.push(x); if (out.length >= (n || 3)) break; }
+    return out;
+  }
+
+  return { norm, check, hostOf, nameMatch, variants, similarity, suggest };
 });
