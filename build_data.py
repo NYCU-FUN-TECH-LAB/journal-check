@@ -4,13 +4,11 @@ Sources
   Beall's List, Publishers and Standalone Journals and Hijacked Journals  (beallslist.net)
   Wikipedia, "Mega journal", List of mega journals
   Wikipedia, "List of MDPI academic journals", plus the section headings of "MDPI > Controversies"
-  DOAJ, change log of journals withdrawn from DOAJ since 1 February 2024 (CC BY-SA 4.0)
   CAS Early Warning Journal List: data/cas_ewl.json, written by make_cas_ewl.py
 
 Run:  python build_data.py            (needs requests and beautifulsoup4)
 The GitHub Actions workflow in .github/workflows runs it every week and commits the result.
 """
-import io
 import json
 import os
 import re
@@ -20,7 +18,6 @@ from datetime import datetime, timezone
 
 import requests
 from bs4 import BeautifulSoup
-from openpyxl import load_workbook
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 UA = {"User-Agent": "csh-journal-check/1.0 (lab tool; list builder)"}
@@ -137,25 +134,6 @@ def mdpi_journals():
     return items
 
 
-DOAJ_LOG = "https://docs.google.com/spreadsheets/d/1Kv3MbgFSgtSDnEGkA2JacrSjunRu0umHeZCtcMeqO5E/export?format=xlsx"
-
-
-def doaj_withdrawn():
-    wb = load_workbook(io.BytesIO(get(DOAJ_LOG).content), read_only=True, data_only=True)
-    ws = wb["Withdrawn"]
-    items, started = [], False
-    for row in ws.iter_rows(values_only=True):
-        if row and row[0] == "Journal Title":
-            started = True
-            continue
-        if not started or not row or not row[0] or not row[1]:
-            continue
-        date = row[2].strftime("%Y-%m-%d") if hasattr(row[2], "strftime") else clean(str(row[2] or ""))
-        items.append({"name": clean(str(row[0])), "issn": re.findall(r"\d{4}-\d{3}[\dXx]", str(row[1])),
-                      "date": date, "reason": clean(str(row[3] or ""))})
-    return items
-
-
 def mdpi_controversies():
     w = wikitext("MDPI")
     a, b = w.find("== Controversies =="), w.find("==Proliferation of special issues==")
@@ -184,11 +162,6 @@ def main():
                             "revision": rev3, "revision_time": ts3, "fetched": now,
                             "publisher_names": ["MDPI", "MDPI AG", "Multidisciplinary Digital Publishing Institute", "Molecular Diversity Preservation International"]}
     print("mega", len(mega), "mdpi", len(md), "controversies", len(sources["wiki_mdpi"]["controversies"]), file=sys.stderr)
-    dw = doaj_withdrawn()
-    sources["doaj_withdrawn"] = {"label": "DOAJ：被除名期刊的紀錄（2024 年 2 月起）", "url": "https://docs.google.com/spreadsheets/d/1Kv3MbgFSgtSDnEGkA2JacrSjunRu0umHeZCtcMeqO5E/edit", "log_url": "https://blog.doaj.org/2025/07/14/let-us-know-is-it-time-to-retire-the-added-withdrawn-change-log/",
-                                 "kind": "aux", "count": len(dw), "items": dw, "fetched": now,
-                                 "note": "這是變更紀錄，只記錄事件，不一定反映期刊現況；2024 年 2 月以前的紀錄不在這裡。"}
-    print("doaj withdrawn", len(dw), file=sys.stderr)
     cas_path = os.path.join(HERE, "data", "cas_ewl.json")
     if os.path.exists(cas_path):
         cas = json.load(open(cas_path, encoding="utf-8"))

@@ -12,7 +12,7 @@ Check a journal against the lab's three rules: not a mega journal, not predatory
 | 1. 不是巨錄 | Wikipedia「Mega journal」條目的 List of mega journals |
 | 2. 不是掠奪 | Beall's List 的 Publishers、Standalone Journals、Hijacked Journals |
 | 3. 不是爭議（MDPI） | 出版者是否為 MDPI、網址是否在 mdpi.com、ISSN 或名稱是否在 Wikipedia 的 List of MDPI academic journals；報告附 Wikipedia MDPI 條目「Controversies」的小節標題 |
-| 輔助參考（不列入判定） | 中科院國際期刊預警名單（2020、2021、2023、2024、2025 版）；DOAJ 除名紀錄（2024 年 2 月起）；DOAJ 目前收錄狀態（即時查詢） |
+| 輔助參考（不列入判定） | 中科院國際期刊預警名單（2020、2021、2023、2024、2025 版），只在查到時才顯示 |
 
 期刊的出版者與 ISSN 取自 OpenAlex；OpenAlex 免費額度用完時自動改用 Crossref。
 
@@ -56,7 +56,7 @@ python -m http.server 8765
 ## 更新名單
 
 ```bash
-pip install requests beautifulsoup4 openpyxl
+pip install requests beautifulsoup4
 python build_data.py
 node tests/test_match.js
 ```
@@ -66,13 +66,11 @@ node tests/test_match.js
 - **OpenAlex 免費額度**是同一個網路位址共用，每天約 100 次查詢，學校網路很容易用完。用完時工具自動改用 Crossref（沒有網址與論文數，網址比對會少一種）。查很多本時，到 openalex.org/settings/api 申請免費金鑰，貼在頁面的「進階」欄位。
 - 名稱比對只認「相同」和很接近的拼法；縮寫（如 J. Technol. Transf.）要先查出全名。
 - 中科院預警名單是依轉載頁面轉錄的（官方網站 ewl.fenqubiao.com 當時連不上），使用前請到官方網站核對。2026 年起中科院的預警機制是否仍以名單形式發布，請自行確認。
-- DOAJ 的除名紀錄是事件紀錄，只涵蓋 2024 年 2 月之後，不一定反映期刊現況。
-- 還沒納入的名單：Cabells、2024 年 2 月以前的 DOAJ 除名紀錄。
+- 還沒納入的名單：Cabells、DOAJ 的收錄與除名紀錄（資料已評估過，因為容易被誤讀，目前不顯示）。
 
 ## 資料來源與授權
 
 - Wikipedia 的條目與清單：CC BY-SA 4.0。
-- DOAJ 的變更紀錄：CC BY-SA 4.0（DOAJ 使用條款）。
 - Beall's List（beallslist.net）：只收錄名單上的名稱與網址，連結回原站；該網站未見明確授權條款，請勿視為本專案授權的一部分。
 - 中科院國際期刊預警名單：只收錄期刊名稱、等級與原因。
 - 程式碼的授權請由建立儲存庫時選擇（建議與 TACIT 一致，用 MIT）。

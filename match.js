@@ -143,8 +143,8 @@
     const seen = new Set();
     res.sources.wiki_mdpi = mdHits.filter((h) => { const k = h.how + h.entry; if (seen.has(k)) return false; seen.add(k); return true; });
 
-    // Reference only (not one of the three rules): CAS early warning list, DOAJ withdrawal log
-    const casHits = [], doajHits = [];
+    // Reference only (not one of the three rules): CAS early warning list
+    const casHits = [];
     ((S.cas_ewl && S.cas_ewl.items) || []).forEach((it) => {
       const isIssn = (it.issn || []).some((x) => issns.includes(issnNorm(x)));
       const nm = nameMatch(names, { name: it.name, text: [it.name].concat(it.aliases || []).join(" / ") }, {});
@@ -153,14 +153,7 @@
       if (isIssn || nm === "exact" || al) casHits.push({ level: generic ? "possible" : "exact", entry: it.name, year: it.year, reason: it.reason, grade: it.level, how: isIssn ? "ISSN 相同" : generic ? "期刊名稱相同，名稱很短，請核對是不是同一本" : "期刊名稱相同" });
       else if (nm) casHits.push({ level: "possible", entry: it.name, year: it.year, reason: it.reason, grade: it.level, how: "名稱相似" });
     });
-    ((S.doaj_withdrawn && S.doaj_withdrawn.items) || []).forEach((it) => {
-      const isIssn = (it.issn || []).some((x) => issns.includes(issnNorm(x)));
-      const nm = nameMatch(names, { name: it.name });
-      if (isIssn || nm === "exact") doajHits.push({ level: "exact", entry: it.name, date: it.date, reason: it.reason, how: isIssn ? "ISSN 相同" : "期刊名稱相同" });
-      else if (nm) doajHits.push({ level: "possible", entry: it.name, date: it.date, reason: it.reason, how: "名稱相似" });
-    });
     res.sources.cas_ewl = casHits;
-    res.sources.doaj_withdrawn = doajHits;
 
     const worst = (arrs) => {
       const all = [].concat(...arrs);
@@ -169,7 +162,7 @@
     res.rules.mega = worst([res.sources.wiki_mega]);
     res.rules.predatory = worst([pubHits, saHits, hjHits]);
     res.rules.mdpi = worst([res.sources.wiki_mdpi]);
-    res.extra = worst([casHits, doajHits]);
+    res.extra = worst([casHits]);
     res.overall = Object.values(res.rules).includes("fail") ? "fail" : Object.values(res.rules).includes("check") ? "check" : "clear";
     return res;
   }
@@ -202,7 +195,6 @@
     S.beall_standalone.items.forEach((x) => add(x.name, "Beall's List 獨立期刊"));
     S.beall_publishers.items.forEach((x) => add(x.name, "Beall's List 出版者"));
     ((S.cas_ewl && S.cas_ewl.items) || []).forEach((x) => add(x.name.replace(/-(basel|us)$/i, ""), "中科院預警名單"));
-    ((S.doaj_withdrawn && S.doaj_withdrawn.items) || []).forEach((x) => add(x.name, "DOAJ 除名紀錄"));
     POOL = { data, items };
     return items;
   }

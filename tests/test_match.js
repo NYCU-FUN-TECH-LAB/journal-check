@@ -46,7 +46,6 @@ test("CAS list: by ISSN (2024 Fuel)", () => assert.ok(C({ name: "Unknown", issns
 test("CAS list: punctuation differences (Scalable Computing: Practice and Experience)", () => assert.ok(C({ name: "Scalable Computing: Practice and Experience" }).sources.cas_ewl.some((x) => x.year === 2025)));
 test("CAS list does not change the three-rule verdict", () => assert.equal(C({ name: "Fuel", issns: ["0016-2361"], publisher: "Elsevier" }).overall, "clear"));
 test("CAS list: Research Policy not listed", () => assert.equal(C({ name: "Research Policy", issns: ["0048-7333"] }).extra, "clear"));
-test("DOAJ withdrawn: by ISSN", () => { const it = data.sources.doaj_withdrawn.items.find((x) => x.issn.length); const r = C({ name: "Zzz", issns: [it.issn[0]] }); assert.equal(r.sources.doaj_withdrawn[0].level, "exact"); assert.equal(r.overall, "clear"); });
 test("typo: IEEE Acecce is suggested as IEEE Access", () => assert.equal(M.suggest("IEEE Acecce", data, 3, 0.6)[0].name, "IEEE Access"));
 test("typo: Scientfic Reports -> Scientific Reports", () => assert.equal(M.suggest("Scientfic Reports", data, 3, 0.6)[0].name, "Scientific Reports"));
 test("similarity: same name is 1, unrelated is low", () => { assert.equal(M.similarity("Research Policy", "research  policy"), 1); assert.ok(M.similarity("Research Policy", "Nature") < 0.3); });
