@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>期刊三不原則比對器</title>
+<style>
+  :root {
+    --bg: #fafaf7; --card: #ffffff; --ink: #2b2b2b; --muted: #5c6b73; --line: #dcd9d0;
+    --fail: #b85042; --fail-bg: #f7e8e4; --check: #a86a00; --check-bg: #fbf0d9; --ok: #4e7d3a; --ok-bg: #eaf2e4;
+    --accent: #028090; --accent-bg: #e3f1f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1b1d1f; --card: #25282b; --ink: #ececec; --muted: #a3adb3; --line: #3b4045;
+      --fail: #e58a7c; --fail-bg: #3b2824; --check: #e5b455; --check-bg: #3a3220; --ok: #8fc27a; --ok-bg: #243126;
+      --accent: #5cc3d1; --accent-bg: #1f3235; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 28px 0 10px; }
+  .sub { color: var(--muted); margin: 0 0 18px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  textarea { width: 100%; min-height: 96px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+  textarea:focus-visible, button:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+  button { font: inherit; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button:disabled { opacity: .55; cursor: default; }
+  .hint { color: var(--muted); font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 14px; }
+  .tag { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .tag.fail { background: var(--fail-bg); color: var(--fail); }
+  .tag.check { background: var(--check-bg); color: var(--check); }
+  .tag.clear { background: var(--ok-bg); color: var(--ok); }
+  .journal { margin-top: 18px; }
+  .journal h3 { margin: 0 0 4px; font-size: 18px; }
+  .meta { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+  .verdict { padding: 10px 12px; border-radius: 8px; margin: 10px 0; font-weight: 600; }
+  .verdict.fail { background: var(--fail-bg); color: var(--fail); }
+  .verdict.check { background: var(--check-bg); color: var(--check); }
+  .verdict.clear { background: var(--ok-bg); color: var(--ok); }
+  .rule td:first-child { width: 22%; font-weight: 600; }
+  .note { font-size: 14px; color: var(--muted); }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--accent); }
+  ul.plain { margin: 6px 0 0 18px; padding: 0; }
+  a { color: var(--accent); }
+  .about p, .about li { font-size: 15px; }
+  @media (max-width: 640px) { th:nth-child(n+4), td:nth-child(n+4) { display: none; } .summary th, .summary td { display: table-cell; } }
+  @media print { .no-print { display: none !important; } body { background: #fff; color: #000; } .card { border: 0; padding: 0; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>期刊三不原則比對器</h1>
+  <p class="sub">輸入期刊名稱、ISSN 或期刊網址，比對它是否為巨錄期刊、掠奪期刊，或 MDPI 出版，並列出是在哪一份名單被查到。</p>
+
+  <section class="card no-print" aria-label="輸入">
+    <label for="q"><strong>要查的期刊</strong>（一行一本；可混用名稱、ISSN、網址）</label>
+    <textarea id="q" placeholder="例如：&#10;ACS Omega&#10;Technological Forecasting and Social Change&#10;2071-1050"></textarea>
+    <details class="no-print" style="margin-top:8px"><summary>進階：OpenAlex 金鑰（查很多本時用）</summary>
+      <p class="note">OpenAlex 免費額度是同一個網路位址共用，每天約 100 次查詢，學校網路常常很快用完；用完時工具會自動改用 Crossref，但資料較少（沒有網址與論文數）。到 openalex.org/settings/api 可以免費申請自己的金鑰，貼在這裡，只存在這台電腦的瀏覽器。</p>
+      <input id="key" type="text" autocomplete="off" placeholder="OpenAlex API key（選填）" style="width:100%;padding:8px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)">
+    </details>
+    <div class="row">
+      <button id="go" class="primary">開始比對</button>
+      <button id="clear">清除</button>
+      <span class="hint" id="status" role="status"></span>
+    </div>
+  </section>
+
+  <section id="out" aria-live="polite"></section>
+
+  <section class="card about" style="margin-top:28px">
+    <h2 style="margin-top:0">比對依據與限制</h2>
+    <ul class="plain" id="sources-list"></ul>
+    <p class="note" style="margin-top:12px"><strong>請注意：</strong></p>
+    <ul class="plain note">
+      <li>「未在名單中找到」不等於「通過」。這份工具只回答「有沒有被這幾份名單列出」，不能證明期刊品質良好。</li>
+      <li>Wikipedia 的巨錄名單只列出代表性例子，不是完整名單；沒被列出的期刊仍可能具有巨錄特徵，最後仍需人工判斷。</li>
+      <li>Beall's List 網站自稱是 Beall 名單的封存版；原始名單約止於 2017 年，其後由網站另外補充。列入與否是該名單的判斷，不代表期刊現況。</li>
+      <li>「輔助參考」的兩份名單不列入三不原則的判定：中科院國際期刊預警名單是依官方名單以外的轉載頁面轉錄的（官方網站當時連不上），使用前請到官方網站核對；DOAJ 的除名紀錄只涵蓋 2024 年 2 月之後，而且是事件紀錄，不一定反映期刊現況。DOAJ 是收錄名單，「已收錄」只是正面參考，「查不到」本身不是問題。</li>
+      <li>「MDPI」這一項是依出版者、網址、ISSN 與 Wikipedia 的 MDPI 期刊名單判斷；Wikipedia 的 MDPI 條目記載了相關爭議，詳見報告中列出的條目標題。</li>
+      <li>名稱比對有「相同」與「相似」兩種；標示「需確認」的結果要點進連結核對。期刊名稱、出版者資料來自 OpenAlex。</li>
+    </ul>
+  </section>
+</main>
+
+<script src="match.js"></script>
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const OA = "https://api.openalex.org/sources";
+  const SELECT = "id,display_name,alternate_titles,abbreviated_title,issn_l,issn,host_organization_name,homepage_url,works_count,counts_by_year,is_in_doaj,type";
+  let DATA = null;
+  const RESULTS = [];
+
+  const RULES = [
+    { key: "mega", n: 1, label: "不是巨錄", src: ["wiki_mega"] },
+    { key: "predatory", n: 2, label: "不是掠奪", src: ["beall_publishers", "beall_standalone", "beall_hijacked"] },
+    { key: "mdpi", n: 3, label: "不是爭議（MDPI）", src: ["wiki_mdpi"] },
+  ];
+  const WORD = { fail: "被列入", check: "需確認", clear: "未列出" };
+  const SRC_NAME = {
+    wiki_mega: "Wikipedia：Mega journal 名單",
+    beall_publishers: "Beall's List：Publishers（出版者）",
+    beall_standalone: "Beall's List：Standalone Journals（獨立期刊）",
+    beall_hijacked: "Beall's List：Hijacked Journals（被冒名期刊）",
+    wiki_mdpi: "MDPI（出版者、ISSN、期刊名單）",
+    cas_ewl: "中科院國際期刊預警名單",
+    doaj_withdrawn: "DOAJ 除名紀錄（2024 年 2 月起）",
+  };
+
+  function h(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v);
+    }
+    kids.flat().forEach((c) => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return e;
+  }
+  const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : null);
+  const link = (text, url) => (safeUrl(url) ? h("a", { href: url, target: "_blank", rel: "noopener noreferrer" }, text) : document.createTextNode(text));
+  const tag = (s) => h("span", { class: "tag " + s }, WORD[s]);
+
+  /* ---------- OpenAlex lookup ---------- */
+  const ISSN_RE = /^\d{4}-?\d{3}[\dXx]$/;
+  const URL_RE = /^(https?:\/\/|www\.)\S+$|^[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i;
+
+  const KEY_NAME = "jc_openalex_key";
+  const getKey = () => { try { return localStorage.getItem(KEY_NAME) || ""; } catch (e) { return ""; } };
+  async function oa(params) {
+    const p = Object.assign({ select: SELECT }, params);
+    if (getKey()) p.api_key = getKey();
+    const r = await fetch(OA + "?" + new URLSearchParams(p));
+    if (!r.ok) { const e = new Error("OpenAlex " + r.status); e.status = r.status; throw e; }
+    return (await r.json()).results || [];
+  }
+  function toCand(s) {
+    const issns = (s.issn || []).concat(s.issn_l ? [s.issn_l] : []);
+    return { name: s.display_name, altNames: (s.alternate_titles || []).concat(s.abbreviated_title ? [s.abbreviated_title] : []),
+      issns: [...new Set(issns)], publisher: s.host_organization_name || "", homepage: s.homepage_url || "",
+      works: s.works_count, byYear: s.counts_by_year || [], doaj: s.is_in_doaj, type: s.type, id: s.id };
+  }
+  /* Crossref is the fallback when OpenAlex's free daily budget (shared by everyone on one network address) is used up */
+  const CR = "https://api.crossref.org/journals";
+  const crCand = (m) => ({ name: m.title, altNames: [], issns: m.ISSN || [], publisher: m.publisher || "", homepage: "", byYear: [] });
+  async function crossref(q, isIssn) {
+    const r = await fetch(isIssn ? CR + "/" + encodeURIComponent(q) : CR + "?" + new URLSearchParams({ query: q, rows: 6 }));
+    if (r.status === 404) return [];
+    if (!r.ok) throw new Error("Crossref " + r.status);
+    const m = (await r.json()).message;
+    return (isIssn ? [m] : m.items || []).map(crCand);
+  }
+  async function lookup(q) {
+    q = q.trim();
+    const isIssn = ISSN_RE.test(q);
+    if (!isIssn && URL_RE.test(q) && !/\s/.test(q) && /\./.test(q))
+      return { cands: [{ name: JCMatch.hostOf(q), altNames: [], issns: [], publisher: "", homepage: q }], how: "網址（只比對網址）" };
+    const id = isIssn ? (q.length === 8 ? q.slice(0, 4) + "-" + q.slice(4) : q).toUpperCase() : "";
+    let cands, how = isIssn ? "ISSN" : "名稱", src = "OpenAlex";
+    try { cands = (await oa(isIssn ? { filter: "issn:" + id } : { search: q, "per-page": 6 })).map(toCand); }
+    catch (e) {
+      if (e.status !== 429 && e.status !== 403 && !(e instanceof TypeError)) throw e;
+      cands = await crossref(isIssn ? id : q, isIssn); src = "Crossref（OpenAlex 的免費額度用完了）";
+    }
+    const nq = JCMatch.norm(q);
+    cands.sort((a, b) => (JCMatch.norm(b.name) === nq) - (JCMatch.norm(a.name) === nq));
+    return { cands, how, src };
+  }
+
+  async function doajLookup(issns) {
+    for (const i of issns.slice(0, 3)) {
+      try {
+        const r = await fetch("https://doaj.org/api/search/journals/" + encodeURIComponent("issn:" + i));
+        if (!r.ok) continue;
+        const d = await r.json();
+        if (d.total > 0) {
+          const j = d.results[0], b = j.bibjson || {};
+          return { state: "in", title: b.title, seal: !!(j.admin && j.admin.seal), url: "https://doaj.org/toc/" + (b.eissn || b.pissn || i),
+            apc: b.apc && b.apc.has_apc ? "有 APC" : b.apc ? "無 APC" : "" };
+        }
+      } catch (e) { return null; }
+    }
+    return issns.length ? { state: "out", url: "https://doaj.org/search/journals?source=" + encodeURIComponent(JSON.stringify({ query: { query_string: { query: issns[0] } } })) } : null;
+  }
+
+  async function checkLine(q) {
+    let cands = [], how = "", warn = "", src = "";
+    try { ({ cands, how, src } = await lookup(q)); }
+    catch (e) { warn = "OpenAlex 暫時查不到（" + e.message + "），只用您輸入的文字比對，結果可能不完整。"; }
+    if (!cands.length) {
+      cands = [{ name: q, altNames: [], issns: [], publisher: "", homepage: "" }];
+      warn = warn || "OpenAlex 找不到這個名稱，只用您輸入的文字比對（沒有出版者與 ISSN 資料），結果可能不完整。";
+    }
+    const doaj = await doajLookup(cands[0].issns || []);
+    return { q, how, src, warn, cands, pick: 0, doaj, doajCache: { 0: doaj } };
+  }
+
+  /* ---------- rendering ---------- */
+  function overallText(o) {
+    return o === "fail" ? "不符合三不原則：在名單中被列出" : o === "check" ? "需要人工確認：有名稱相似的條目" : "在已比對的名單中沒有被列出";
+  }
+  function evidenceRows(item, cand) {
+    const rows = [];
+    const r = item.res;
+    for (const rule of RULES) {
+      rule.src.forEach((sk, i) => {
+        const hits = r.sources[sk];
+        const srcInfo = DATA.sources[sk];
+        const st = hits.some((x) => x.level === "exact") ? "fail" : hits.length ? "check" : "clear";
+        const detail = h("div", {});
+        if (!hits.length) detail.append(h("span", { class: "note" }, "沒有找到相符的條目"));
+        hits.slice(0, 6).forEach((x) => {
+          detail.append(h("div", {}, x.level === "exact" ? "相同：" : "相似：", link(x.entry, x.url), x.how ? "（" + x.how + "）" : "", x.note || "",
+            x.text && x.text !== x.entry && x.text.length > x.entry.length ? h("div", { class: "note" }, "名單上的說明：" + (x.text.length > 220 ? x.text.slice(0, 220) + "…" : x.text)) : null,
+            x.authentic ? h("div", { class: "note" }, "正版期刊：", link(x.authentic, x.authentic_url)) : null,
+            x.section === "update" ? h("div", { class: "note" }, "此條目在名單的「更新」區段") : null));
+        });
+        if (hits.length > 6) detail.append(h("div", { class: "note" }, "還有 " + (hits.length - 6) + " 筆，已省略"));
+        if (sk === "wiki_mdpi" && hits.length) {
+          detail.append(h("details", {}, h("summary", {}, "Wikipedia MDPI 條目的「爭議」小節標題"),
+            h("ul", { class: "plain" }, srcInfo.controversies.map((t) => h("li", {}, t)))));
+        }
+        rows.push(h("tr", { class: "rule" },
+          h("td", {}, i === 0 ? rule.n + ". " + rule.label : ""),
+          h("td", {}, link(SRC_NAME[sk], srcInfo.url), h("div", { class: "note" }, "資料日期 " + srcInfo.fetched + (srcInfo.count ? "，" + srcInfo.count + " 筆" : ""))),
+          h("td", {}, tag(st)), h("td", {}, detail)));
+      });
+    }
+    rows.push(h("tr", {}, h("td", { colspan: 4, class: "note", style: "padding-top:14px" }, "輔助參考（不列入三不原則的判定，但值得看）")));
+    ["cas_ewl", "doaj_withdrawn"].forEach((sk) => {
+      const hits = r.sources[sk] || [], srcInfo = DATA.sources[sk];
+      if (!srcInfo) return;
+      const st = hits.some((x) => x.level === "exact") ? "fail" : hits.length ? "check" : "clear";
+      const detail = h("div", {});
+      if (!hits.length) detail.append(h("span", { class: "note" }, "沒有找到相符的條目"));
+      hits.slice(0, 6).forEach((x) => detail.append(h("div", {}, x.level === "exact" ? "相同：" : "相似：", x.entry, "（", x.how, "）",
+        x.year ? h("div", { class: "note" }, x.year + " 版名單" + (x.grade ? "，等級 " + ({ high: "高", medium: "中", low: "低" }[x.grade]) : "") + (x.reason ? "，原因：" + x.reason : "")) : null,
+        x.date ? h("div", { class: "note" }, "除名日期 " + x.date + "，原因：" + x.reason) : null)));
+      if (sk === "cas_ewl") detail.append(h("div", { class: "note" }, srcInfo.provenance));
+      if (sk === "doaj_withdrawn") detail.append(h("div", { class: "note" }, srcInfo.note));
+      rows.push(h("tr", { class: "rule" }, h("td", {}, ""),
+        h("td", {}, link(SRC_NAME[sk], srcInfo.url), h("div", { class: "note" }, "資料日期 " + srcInfo.fetched + "，" + srcInfo.count + " 筆")),
+        h("td", {}, tag(st)), h("td", {}, detail)));
+    });
+    const dj = item.doaj;
+    rows.push(h("tr", { class: "rule" }, h("td", {}, ""),
+      h("td", {}, link("DOAJ 目前收錄狀態", dj && dj.url || "https://doaj.org/"), h("div", { class: "note" }, "即時查詢 DOAJ")),
+      h("td", {}, dj && dj.state === "in" ? h("span", { class: "tag clear" }, "已收錄") : dj && dj.state === "out" ? h("span", { class: "tag check" }, "查不到") : h("span", { class: "note" }, "未查詢")),
+      h("td", {}, dj && dj.state === "in" ? "DOAJ 收錄：" + dj.title + (dj.seal ? "，有 DOAJ Seal" : "") + (dj.apc ? "，" + dj.apc : "")
+        : dj && dj.state === "out" ? h("span", {}, "DOAJ 目前沒有這個 ISSN。DOAJ 是收錄名單，查不到不代表有問題（可能從未申請，或已被除名）。") : h("span", { class: "note" }, "沒有 ISSN 或查詢失敗"))));
+    return rows;
+  }
+
+  function renderJournal(item, idx) {
+    const cand = item.cands[item.pick];
+    item.res = JCMatch.check(cand, DATA);
+    const yrs = (cand.byYear || []).slice().sort((a, b) => b.year - a.year);
+    const lastFull = yrs.find((y) => y.year < new Date().getFullYear());
+    const sel = item.cands.length > 1 ? h("label", { class: "note no-print" }, "OpenAlex 找到多個，這是您要的嗎？ ",
+      (() => { const s = h("select", { "aria-label": "選擇期刊" }, item.cands.map((c, i) => h("option", { value: i }, c.name + "（" + (c.issns[0] || "無 ISSN") + "，" + (c.publisher || "出版者不明") + "）")));
+        s.value = item.pick; s.addEventListener("change", async () => { item.pick = +s.value; if (!(item.pick in item.doajCache)) item.doajCache[item.pick] = await doajLookup(item.cands[item.pick].issns || []); item.doaj = item.doajCache[item.pick]; renderAll(); }); return s; })()) : null;
+    return h("div", { class: "journal card" },
+      h("h3", {}, "「" + item.q + "」→ " + cand.name),
+      h("div", { class: "meta" }, [cand.issns.length ? "ISSN " + cand.issns.join("、") : null, cand.publisher ? "出版者 " + cand.publisher : null,
+        cand.homepage ? "網站 " + JCMatch.hostOf(cand.homepage) : null,
+        lastFull ? lastFull.year + " 年論文數 " + lastFull.works_count.toLocaleString() + "（OpenAlex，僅供參考）" : null].filter(Boolean).join("　｜　")),
+      item.warn ? h("div", { class: "note", style: "color:var(--check)" }, item.warn) : null,
+      item.src ? h("div", { class: "note" }, "期刊資料來源：" + item.src) : null, sel,
+      h("div", { class: "verdict " + item.res.overall }, overallText(item.res.overall)),
+      h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "三不原則"), h("th", {}, "比對的名單"), h("th", {}, "結果"), h("th", {}, "查到的條目"))),
+        h("tbody", {}, evidenceRows(item, cand))));
+  }
+
+  function renderAll() {
+    const out = $("out"); out.replaceChildren();
+    if (!RESULTS.length) return;
+    out.append(h("h2", {}, "比對結果"));
+    const head = h("tr", {}, h("th", {}, "輸入"), h("th", {}, "對應到的期刊"),
+      ...RULES.map((r) => h("th", {}, r.n + ". " + r.label)), h("th", {}, "結論"), h("th", {}, "輔助警示"));
+    const body = RESULTS.map((it) => {
+      const c = it.cands[it.pick]; it.res = JCMatch.check(c, DATA);
+      return h("tr", {}, h("td", {}, it.q), h("td", {}, c.name, h("div", { class: "note" }, c.publisher || "")),
+        ...RULES.map((r) => h("td", {}, tag(it.res.rules[r.key]))), h("td", {}, tag(it.res.overall)),
+        h("td", {}, it.res.extra === "clear" ? h("span", { class: "note" }, "無") : tag(it.res.extra)));
+    });
+    out.append(h("div", { class: "card" }, h("table", { class: "summary" }, h("thead", {}, head), h("tbody", {}, body))));
+    RESULTS.forEach((it, i) => out.append(renderJournal(it, i)));
+    out.append(h("div", { class: "row no-print" },
+      h("button", { id: "dl-html" }, "下載報告（網頁檔）"), h("button", { id: "dl-csv" }, "下載表格（CSV）"), h("button", { id: "pr" }, "列印")));
+    $("dl-html").onclick = downloadHtml; $("dl-csv").onclick = downloadCsv; $("pr").onclick = () => window.print();
+  }
+
+  /* ---------- export ---------- */
+  function save(name, mime, text) {
+    const a = h("a", { href: URL.createObjectURL(new Blob([text], { type: mime })), download: name });
+    document.body.append(a); a.click(); a.remove();
+  }
+  const stamp = () => new Date().toISOString().slice(0, 10);
+  function downloadHtml() {
+    const css = document.querySelector("style").textContent;
+    const clone = $("out").cloneNode(true);
+    clone.querySelectorAll(".no-print, select").forEach((e) => e.remove());
+    const srcs = Object.entries(DATA.sources).map(([k, s]) => "<li>" + esc(s.label) + "：" + esc(s.url) + "（資料日期 " + esc(s.fetched) + "，" + s.count + " 筆）</li>").join("");
+    save("期刊三不原則比對報告_" + stamp() + ".html", "text/html",
+      "<!doctype html><html lang=zh-Hant><meta charset=utf-8><title>期刊三不原則比對報告</title><style>" + css + "</style><main><h1>期刊三不原則比對報告</h1><p class=sub>產生日期 " + stamp() +
+      "。名單資料更新於 " + esc(DATA.generated) + "。未列出不等於通過，結果需人工確認。</p>" + clone.innerHTML +
+      "<h2>比對的名單</h2><ul class=plain>" + srcs + "</ul></main>");
+  }
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function downloadCsv() {
+    const q = (s) => '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"';
+    const lines = [["輸入", "對應期刊", "ISSN", "出版者", "1.巨錄", "2.掠奪", "3.MDPI", "結論", "輔助警示（中科院、DOAJ除名）", "DOAJ收錄", "查到的條目"].map(q).join(",")];
+    RESULTS.forEach((it) => {
+      const c = it.cands[it.pick], r = it.res;
+      const hits = Object.entries(r.sources).flatMap(([k, a]) => a.map((x) => SRC_NAME[k] + "：" + x.entry + "（" + (x.level === "exact" ? "相同" : "相似") + "）"));
+      lines.push([it.q, c.name, c.issns.join("; "), c.publisher, WORD[r.rules.mega], WORD[r.rules.predatory], WORD[r.rules.mdpi], overallText(r.overall), WORD[r.extra], it.doaj ? (it.doaj.state === "in" ? "已收錄" : "查不到") : "未查詢", hits.join(" | ")].map(q).join(","));
+    });
+    save("期刊三不原則比對_" + stamp() + ".csv", "text/csv", "﻿" + lines.join("\r\n"));
+  }
+
+  /* ---------- wiring ---------- */
+  async function run() {
+    const lines = $("q").value.split(/\n/).map((s) => s.trim()).filter(Boolean).slice(0, 30);
+    if (!lines.length) { $("status").textContent = "請先輸入期刊。"; return; }
+    $("go").disabled = true; RESULTS.length = 0;
+    for (let i = 0; i < lines.length; i++) {
+      $("status").textContent = "查詢中 " + (i + 1) + " / " + lines.length + "：" + lines[i];
+      RESULTS.push(await checkLine(lines[i]));
+    }
+    $("status").textContent = "完成，共 " + lines.length + " 本。"; $("go").disabled = false; renderAll();
+  }
+
+  fetch("data/lists.json").then((r) => r.json()).then((d) => {
+    DATA = d;
+    $("sources-list").append(...Object.values(d.sources).map((s) => h("li", {}, link(s.label, s.url), "：資料日期 " + s.fetched +
+      (s.count ? "，" + s.count + " 筆" : "") + (s.page_dates && s.page_dates.length ? "；頁面標示 " + s.page_dates.join("、") : "") +
+      (s.revision_time ? "；Wikipedia 版本時間 " + s.revision_time.slice(0, 10) : ""))));
+    try { $("key").value = getKey(); } catch (e) {}
+    $("key").addEventListener("change", () => { try { localStorage.setItem(KEY_NAME, $("key").value.trim()); } catch (e) {} });
+    $("go").addEventListener("click", run);
+    $("clear").addEventListener("click", () => { $("q").value = ""; RESULTS.length = 0; renderAll(); $("status").textContent = ""; });
+    $("q").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) run(); });
+    $("status").textContent = "名單資料更新於 " + d.generated + "。可以開始查詢。";
+  }).catch(() => { $("status").textContent = "讀不到 data/lists.json，請用網頁伺服器（例如 GitHub Pages）開啟，不要直接開檔案。"; $("go").disabled = true; });
+})();
+</script>
+</body>
+</html>

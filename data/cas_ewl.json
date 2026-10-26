@@ -1,0 +1,910 @@
+{
+ "label": "中科院文獻情報中心：國際期刊預警名單（2020、2021、2023、2024、2025 版）",
+ "url": "https://ewl.fenqubiao.com/#/en/early-warning-journal-list-2025",
+ "editions": {
+  "2020": 65,
+  "2021": 35,
+  "2023": 28,
+  "2024": 24,
+  "2025": 5
+ },
+ "note": "2022 年沒有發布。2020、2021 版名單標示高、中、低三級；2024 版起列出預警原因，2025 版不再分級。",
+ "provenance": "名稱轉錄自轉載頁面與二手來源，官方網站當時連不上；使用前請到官方網站核對。",
+ "items": [
+  {
+   "name": "Metals",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Coatings",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Materials",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Journal Of Nanoscience And Nanotechnology",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Minerals",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Atmosphere",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Artificial Cells Nanomedicine And Biotechnology",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "Advances In Civil Engineering",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "International Journal Of Energy Research",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Mathematical Problems In Engineering",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Sensors",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Energies",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Applied Sciences-Basel",
+   "year": 2020,
+   "level": "low",
+   "aliases": [
+    "Applied Sciences"
+   ]
+  },
+  {
+   "name": "Polymers",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Electronics",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Processes",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Complexity",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Desalination And Water Treatment",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "International Journal Of Electrochemical Science",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Catalysts",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Molecules",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Natural Product Research",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Zeitschrift Fur Kristallographie-New Crystal Structures",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Sustainability",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Water",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Ieee Access",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Agronomy-Basel",
+   "year": 2020,
+   "level": "low",
+   "aliases": [
+    "Agronomy"
+   ]
+  },
+  {
+   "name": "Journal Of Cellular Biochemistry",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "Journal Of Cellular Physiology",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Bioscience Reports",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Biomed Research International",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Biofactors",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Plants-Basel",
+   "year": 2020,
+   "level": "low",
+   "aliases": [
+    "Plants"
+   ]
+  },
+  {
+   "name": "Cells",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Boundary Value Problems",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "Advances In Difference Equations",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "Journal Of Inequalities And Applications",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Mathematics",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "European Review For Medical And Pharmacological Sciences",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "International Journal Of Clinical And Experimental Pathology",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "Medicine",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "International Journal Of Clinical And Experimental Medicine",
+   "year": 2020,
+   "level": "high"
+  },
+  {
+   "name": "Biomedicine & Pharmacotherapy",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Experimental And Molecular Pathology",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Brazilian Journal Of Medical And Biological Research",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Cancer Biomarkers",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "International Journal Of Immunopathology And Pharmacology",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Oncology Research",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "American Journal Of Cancer Research",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Medical Science Monitor",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Oncology Letters",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Experimental And Therapeutic Medicine",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Oncotargets And Therapy",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Oncology Reports",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Molecular Medicine Reports",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "International Journal Of Molecular Medicine",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Journal Of International Medical Research",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "American Journal Of Translational Research",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Journal Of Biomaterials And Tissue Engineering",
+   "year": 2020,
+   "level": "medium"
+  },
+  {
+   "name": "Aging-Us",
+   "year": 2020,
+   "level": "medium",
+   "aliases": [
+    "Aging"
+   ]
+  },
+  {
+   "name": "Life Sciences",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Journal Of Clinical Medicine",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "International Journal Of Environmental Research And Public Health",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Acta Medica Mediterranea",
+   "year": 2020,
+   "level": "low"
+  },
+  {
+   "name": "Symmetry-Basel",
+   "year": 2020,
+   "level": "low",
+   "aliases": [
+    "Symmetry"
+   ]
+  },
+  {
+   "name": "Complexity",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Shock and Vibration",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Advances in Civil Engineering",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Biomedicines",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Microprocessors and Microsystems",
+   "year": 2021,
+   "level": "high"
+  },
+  {
+   "name": "Scientific Programming",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "BioFactors",
+   "year": 2021,
+   "level": "high"
+  },
+  {
+   "name": "Mitochondrial DNA Part B-Resources",
+   "year": 2021,
+   "level": "medium",
+   "aliases": [
+    "Mitochondrial DNA Part B"
+   ]
+  },
+  {
+   "name": "Frontiers in Molecular Biosciences",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Frontiers in Cell and Developmental Biology",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Life-Basel",
+   "year": 2021,
+   "level": "low",
+   "aliases": [
+    "Life"
+   ]
+  },
+  {
+   "name": "Biology-Basel",
+   "year": 2021,
+   "level": "low",
+   "aliases": [
+    "Biology"
+   ]
+  },
+  {
+   "name": "Discrete Dynamics in Nature and Society",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "AIMS Mathematics",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Journal of Mathematics",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Pharmazie",
+   "year": 2021,
+   "level": "high"
+  },
+  {
+   "name": "Molecular Therapy-Nucleic Acids",
+   "year": 2021,
+   "level": "high"
+  },
+  {
+   "name": "Experimental and Molecular Pathology",
+   "year": 2021,
+   "level": "high"
+  },
+  {
+   "name": "Journal of Cellular and Molecular Medicine",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Molecular Medicine Reports",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Journal of International Medical Research",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Journal of Cancer",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Medical Science Monitor",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Aging-US",
+   "year": 2021,
+   "level": "medium",
+   "aliases": [
+    "Aging"
+   ]
+  },
+  {
+   "name": "OncoTargets and Therapy",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Cancer Management and Research",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Cancer Cell International",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "World Journal of Clinical Cases",
+   "year": 2021,
+   "level": "medium"
+  },
+  {
+   "name": "Annals of Palliative Medicine",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "International Journal of General Medicine",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Frontiers in Medicine",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Journal of Personalized Medicine",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Healthcare",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Diagnostics",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Vaccines",
+   "year": 2021,
+   "level": "low"
+  },
+  {
+   "name": "Textile Research Journal",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Geofluids",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Frontiers In Earth Science",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Journal Of Industrial And Management Optimization",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Mathematical Problems In Engineering",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Aerospace",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Buildings",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Computational And Mathematical Methods In Medicine",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Energy Reports",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Machines",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Inorganic And Nano-Metal Chemistry",
+   "year": 2023,
+   "level": "high"
+  },
+  {
+   "name": "Journal Of Structural Chemistry",
+   "year": 2023,
+   "level": "high"
+  },
+  {
+   "name": "International Journal Of Electrochemical Science",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Frontiers In Environmental Science",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Microprocessors And Microsystems",
+   "year": 2023,
+   "level": "high"
+  },
+  {
+   "name": "International Journal Of Control Automation And Systems",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Mobile Information Systems",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Economic Research-Ekonomska Istrazivanja",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Food Science And Technology",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "Journal Of Environmental And Public Health",
+   "year": 2023,
+   "level": "high"
+  },
+  {
+   "name": "Pharmazie",
+   "year": 2023,
+   "level": "high"
+  },
+  {
+   "name": "Psychiatria Danubina",
+   "year": 2023,
+   "level": "high"
+  },
+  {
+   "name": "Acta Medica Mediterranea",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "American Journal Of Translational Research",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Journal Of Biomaterials And Tissue Engineering",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Journal Of Clinical Laboratory Analysis",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "World Journal Of Clinical Cases",
+   "year": 2023,
+   "level": "medium"
+  },
+  {
+   "name": "Frontiers In Surgery",
+   "year": 2023,
+   "level": "low"
+  },
+  {
+   "name": "CANCERS",
+   "year": 2024,
+   "issn": [
+    "2072-6694"
+   ],
+   "reason": "引用操纵"
+  },
+  {
+   "name": "DIAGNOSTICS",
+   "year": 2024,
+   "issn": [
+    "2075-4418"
+   ],
+   "reason": "引用操纵"
+  },
+  {
+   "name": "ENVIRONMENTAL SCIENCE AND POLLUTION RESEARCH",
+   "year": 2024,
+   "issn": [
+    "0944-1344"
+   ],
+   "reason": "引用操纵、论文工厂"
+  },
+  {
+   "name": "FUEL",
+   "year": 2024,
+   "issn": [
+    "0016-2361"
+   ],
+   "reason": "引用操纵"
+  },
+  {
+   "name": "JOURNAL OF CLINICAL MEDICINE",
+   "year": 2024,
+   "issn": [
+    "2077-0383"
+   ],
+   "reason": "引用操纵"
+  },
+  {
+   "name": "JOURNAL OF PERSONALIZED MEDICINE",
+   "year": 2024,
+   "issn": [
+    "2075-4426"
+   ],
+   "reason": "引用操纵"
+  },
+  {
+   "name": "RADIOLOGIA MEDICA",
+   "year": 2024,
+   "issn": [
+    "0033-8362"
+   ],
+   "reason": "引用操纵"
+  },
+  {
+   "name": "BIOENGINEERED",
+   "year": 2024,
+   "issn": [
+    "2165-5979"
+   ],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "CONNECTION SCIENCE",
+   "year": 2024,
+   "issn": [
+    "0954-0091"
+   ],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "MULTIMEDIA TOOLS AND APPLICATIONS",
+   "year": 2024,
+   "issn": [
+    "1380-7501"
+   ],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "PSYCHIATRIA DANUBINA",
+   "year": 2024,
+   "issn": [
+    "0353-5053"
+   ],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "JOURNAL OF BIOBASED MATERIALS AND BIOENERGY",
+   "year": 2024,
+   "issn": [
+    "1556-6560"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "JOURNAL OF BIOMATERIALS AND TISSUE ENGINEERING",
+   "year": 2024,
+   "issn": [
+    "2157-9083"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "JOURNAL OF BIOMEDICAL NANOTECHNOLOGY",
+   "year": 2024,
+   "issn": [
+    "1550-7033"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "JOURNAL OF NANOELECTRONICS AND OPTOELECTRONICS",
+   "year": 2024,
+   "issn": [
+    "1555-130X"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "JOURNAL OF SENSORS",
+   "year": 2024,
+   "issn": [
+    "1687-725X"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "MATERIALS EXPRESS",
+   "year": 2024,
+   "issn": [
+    "2158-5849"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "SCIENCE OF ADVANCED MATERIALS",
+   "year": 2024,
+   "issn": [
+    "1947-2935"
+   ],
+   "reason": "论文工厂、中国作者占比畸高"
+  },
+  {
+   "name": "ALTERNATIVE THERAPIES IN HEALTH AND MEDICINE",
+   "year": 2024,
+   "issn": [
+    "1078-6791"
+   ],
+   "reason": "中国作者占比畸高"
+  },
+  {
+   "name": "CMES-COMPUTER MODELING IN ENGINEERING & SCIENCES",
+   "year": 2024,
+   "issn": [
+    "1526-1492"
+   ],
+   "reason": "中国作者占比畸高"
+  },
+  {
+   "name": "EXPERIMENTAL AND THERAPEUTIC MEDICINE",
+   "year": 2024,
+   "issn": [
+    "1792-0981"
+   ],
+   "reason": "中国作者占比畸高"
+  },
+  {
+   "name": "FRONTIERS IN ENERGY RESEARCH",
+   "year": 2024,
+   "issn": [
+    "2296-598X"
+   ],
+   "reason": "中国作者占比畸高"
+  },
+  {
+   "name": "MATHEMATICAL BIOSCIENCES AND ENGINEERING",
+   "year": 2024,
+   "issn": [
+    "1547-1063"
+   ],
+   "reason": "中国作者占比畸高"
+  },
+  {
+   "name": "TROPICAL JOURNAL OF PHARMACEUTICAL RESEARCH",
+   "year": 2024,
+   "issn": [
+    "1596-5996"
+   ],
+   "reason": "中国作者占比畸高"
+  },
+  {
+   "name": "Wireless Personal Communications",
+   "year": 2025,
+   "issn": [
+    "0929-6212"
+   ],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "Natural Resources Forum",
+   "year": 2025,
+   "issn": [
+    "0165-0203"
+   ],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "Computers & Electrical Engineering",
+   "year": 2025,
+   "issn": [],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "Numerical Heat Transfer Part A-Applications",
+   "year": 2025,
+   "issn": [],
+   "reason": "论文工厂"
+  },
+  {
+   "name": "Scalable Computing-Practice and Experience",
+   "year": 2025,
+   "issn": [
+    "1895-1767"
+   ],
+   "reason": "论文工厂"
+  }
+ ]
+}
